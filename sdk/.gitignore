@@ -1,0 +1,5 @@
+*.o
+gloss/libgloss.a
+app.bin
+app.elf
+app.map
