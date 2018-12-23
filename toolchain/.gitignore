@@ -1,0 +1,8 @@
+crosstool-build
+crosstool-ng
+toolchain
+toolchain-build/.build
+toolchain-build/build.log
+toolchain-build/.config.old
+
+
