@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
 		printf("Usage: $s memfile.bin\n", argv[0]);
 		exit(0);
 	}
-	uint8_t *main_mem=malloc(8*1024*1024);
+	uint8_t *main_mem=calloc(1, 8*1024*1024);
 	FILE *f=fopen(argv[1], "rb");
 	if (f==NULL) {
 		perror(argv[1]);

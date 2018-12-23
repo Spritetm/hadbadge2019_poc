@@ -8,7 +8,7 @@ means.
 */
 
 MEMORY {
-	ram : org = 0x00000000, len = 8*1024*1024
+	ram : org = 0x00001000, len = 8*1024*1024-0x1000
 }
 
 _stack_size = 0x1000;
@@ -25,7 +25,11 @@ SECTIONS {
 	.data : {
 		. = ALIGN(4);
 		*(.rodata);
+		*(.rodata.*);
+		*(.srodata)
+		*(.srodata.*);
 		*(.data);
+		*(.sdata);
 	} > ram
 	.bss (NOLOAD) : {
 		. = ALIGN(4);
@@ -34,9 +38,9 @@ SECTIONS {
 		*(.sbss);
 		. = ALIGN(4);
 		_bss_end = .;
-		_end = .;
 	} > ram
 	.stack (NOLOAD) : {
+		_end = .;
 		_stack_start = ORIGIN(ram) + LENGTH(ram);
 		_stack_end = ORIGIN(ram) + LENGTH(ram) - _stack_size;
 	} > ram
