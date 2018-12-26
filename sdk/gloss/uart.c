@@ -3,11 +3,11 @@
 #include "uart.h"
 
 extern uint32_t UART[];
-#define uartreg(i) UART[i/4]
+#define UARTREG(i) UART[i/4]
 
 void uart_putchar(char c) {
-	while (!(uartreg(UART_FLAG_REG)&UART_FLAG_TXDONE)) ;
-	uartreg(UART_DATA_REG)=c;
+	while (!(UARTREG(UART_FLAG_REG)&UART_FLAG_TXDONE)) ;
+	UARTREG(UART_DATA_REG)=c;
 }
 
 void uart_write(const char *buf, int len) {

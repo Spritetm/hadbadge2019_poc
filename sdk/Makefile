@@ -13,7 +13,7 @@ APPNAME := app
 TARGET_ELF := $(APPNAME).elf
 TARGET_BIN := $(APPNAME).bin
 TARGET_MAP := $(APPNAME).map
-OBJS := main.o program.o
+OBJS := main.o program.o test.o
 LIBS := gloss/libgloss.a mybasic/libmybasic.a
 LDSCRIPT := gloss/ldscript.ld
 
