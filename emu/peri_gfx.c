@@ -34,6 +34,8 @@ static void gfx_write_fn(void *opaque, uint32_t offset, uint32_t val, int size_l
 			g->bgnd[bgnd_per_idx].scrollx=val;
 		} else if (offset==GFX_BGND_SCROLLY_REG(bgnd_per_idx)) {
 			g->bgnd[bgnd_per_idx].scrolly=val;
+		} else if (offset==GFX_BGND_TRANS_COL_REG(bgnd_per_idx)) {
+			g->bgnd[bgnd_per_idx].transcol=val;
 		} else {
 			printf("gfx: bgnd peri %d: write to undefined reg %x\n", offset);
 		}
@@ -88,14 +90,20 @@ static void gfx_render_fb_scanline(uint8_t *scanline, int ypos, peri_gfx_t *g, c
 
 static void gfx_render_bgnd_scanline(uint8_t *scanline, int ypos, peri_gfx_bgnd_t *b, const uint8_t *mem) {
 	if (!b->gfx_addr || !b->map_addr) return;
+	if (!b->height || !b->width) return;
+
 	ypos=ypos+b->scrolly;
-	if (ypos>=b->height*8) ypos-=b->height*8;
+	while (ypos>=b->height*8) ypos-=b->height*8;
 	int xpos=b->scrollx;
+	while (xpos>=b->width*8) xpos-=b->width*8;
+
+	uint16_t *tiledata=(uint16_t*)(&mem[b->map_addr]);
 	for (int i=0; i<FBW; i++) {
 		int tileidx=(ypos/8)*b->width+(xpos/8);
-		int tileno=mem[tileidx+b->map_addr];
+		int tileno=tiledata[tileidx];
 		const uint8_t *tile=&mem[b->gfx_addr+64*tileno];
-		scanline[i]=tile[(ypos%8)*8+(xpos%8)];
+		uint8_t col=tile[(ypos%8)*8+(xpos%8)];
+		if (col!=b->transcol) scanline[i]=col;
 		xpos++;
 		if (xpos>=b->width*8) xpos-=b->width*8;
 	}
@@ -104,10 +112,10 @@ static void gfx_render_bgnd_scanline(uint8_t *scanline, int ypos, peri_gfx_bgnd_
 void peri_gfx_render_scanline(int ypos, peri_gfx_t *g, const uint8_t *mem) {
 	uint8_t scanline[320];
 	if (ypos==0) gfx_clear();
+	gfx_render_fb_scanline(scanline, ypos, g, mem);
 	for (int i=0; i<GFX_BGND_COUNT; i++) {
 		gfx_render_bgnd_scanline(scanline, ypos, &g->bgnd[i], mem);
 	}
-	gfx_render_fb_scanline(scanline, ypos, g, mem);
 	gfx_render_fbmem_scanline(ypos, scanline);
 	if (ypos==239) gfx_flip();
 	g->last_scanline=ypos;

@@ -60,10 +60,12 @@ void mach_setup(uint8_t *main_mem) {
 	while(1) {
 		struct timeval frame_start, frame_end, frame_len, delay_len;
 		gettimeofday(&frame_start, NULL);
-		//Run CPU for one frame
-		riscv_cpu_interp(cpu, CPU_IPS/GFX_FPS);
-		//Render frame
-		peri_gfx_render(peri_gfx, main_mem);
+		for (int y=0; y<240; y++) {
+			//Run CPU for one scanline
+			riscv_cpu_interp(cpu, CPU_IPS/(GFX_FPS*240));
+			//Render frame
+			peri_gfx_render_scanline(y, peri_gfx, main_mem);
+		}
 		//Cap fps
 		gettimeofday(&frame_end, NULL);
 		timersub(&frame_end, &frame_start, &frame_len);

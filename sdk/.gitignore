@@ -1,5 +1,6 @@
 *.o
 gloss/libgloss.a
+mybasic/libmybasic.a
 app.bin
 app.elf
 app.map

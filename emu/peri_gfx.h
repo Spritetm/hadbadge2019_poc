@@ -11,6 +11,7 @@ typedef struct {
 	uint32_t height;
 	uint32_t scrollx;
 	uint32_t scrolly;
+	uint32_t transcol;
 } peri_gfx_bgnd_t;
 
 typedef struct {
