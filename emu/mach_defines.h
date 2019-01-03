@@ -45,6 +45,19 @@
 #define CHEAT_RAW_READ_ADDR_REG 0x1C
 
 
+#define BUTTON_OFFSET 0x10030000
+#define BUTTON_READ_REG 0x0
+#define BUTTON_UP 0
+#define BUTTON_DOWN 1
+#define BUTTON_LEFT 2
+#define BUTTON_RIGHT 3
+#define BUTTON_A 4
+#define BUTTON_B 5
+#define BUTTON_SELECT 6
+#define BUTTON_START 7
+
+
+
 typedef struct __attribute__((packed)) {
 	uint16_t w;
 	uint16_t h;

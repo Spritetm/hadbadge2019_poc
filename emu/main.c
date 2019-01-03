@@ -8,6 +8,8 @@
 #include "peri_uart.h"
 #include "peri_gfx.h"
 #include "peri_cheat.h"
+#include "peri_buttons.h"
+#include "sdl_glue.h"
 
 #include <sys/select.h>
 #include <sys/time.h>
@@ -20,6 +22,11 @@ PhysMemoryRange *ram;
 peri_gfx_t *peri_gfx;
 peri_uart_t *peri_uart;
 peri_cheat_t *peri_cheat;
+peri_buttons_t *peri_buttons;
+
+static int buttons_get() {
+	return gfx_get_buttons();
+}
 
 static void uart_putchar(char c) {
 	putchar(c);
@@ -56,6 +63,8 @@ void mach_setup(uint8_t *main_mem) {
 	peri_gfx=peri_gfx_init(memmap, GFX_OFFSET);
 	//Register cheat interface peripheral
 	peri_cheat=peri_cheat_init(memmap, CHEAT_OFFSET, main_mem);
+	//Register buttons peripheral
+	peri_buttons=peri_buttons_init(memmap, BUTTON_OFFSET, buttons_get);
 
 
 	//Instantiate CPU
@@ -72,6 +81,9 @@ void mach_setup(uint8_t *main_mem) {
 			//Render frame
 			peri_gfx_render_scanline(y, peri_gfx, main_mem);
 		}
+		//Get events
+		int quit=gfx_poll_event();
+		if (quit) break;
 		//Cap fps
 		gettimeofday(&frame_end, NULL);
 		timersub(&frame_end, &frame_start, &frame_len);

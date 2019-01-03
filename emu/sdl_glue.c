@@ -58,3 +58,27 @@ int gfx_flip() {
 	SDL_BlitScaled(render_surf, NULL, screen_surface, NULL);
 	SDL_UpdateWindowSurface(window);
 }
+
+static int buttons=0;
+
+int gfx_poll_event() {
+	SDL_Event e;
+	while(SDL_PollEvent(&e)!=0) {
+		if (e.type==SDL_QUIT) {
+			return 1;
+		} else if (e.type==SDL_KEYDOWN || e.type==SDL_KEYUP) {
+			if (e.key.keysym.sym==SDLK_ESCAPE && e.type==SDL_KEYDOWN) return 1;
+			int mask;
+			if (e.key.keysym.sym==SDLK_UP) mask=(1<<BUTTON_UP);
+			if (e.key.keysym.sym==SDLK_DOWN) mask=(1<<BUTTON_DOWN);
+			if (e.key.keysym.sym==SDLK_LEFT) mask=(1<<BUTTON_LEFT);
+			if (e.key.keysym.sym==SDLK_RIGHT) mask=(1<<BUTTON_RIGHT);
+			if (e.type==SDL_KEYDOWN) buttons|=mask; else buttons&=~mask;
+		}
+	}
+	return 0;
+}
+
+int gfx_get_buttons() {
+	return buttons;
+}
