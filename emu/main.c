@@ -7,6 +7,8 @@
 
 #include "peri_uart.h"
 #include "peri_gfx.h"
+#include "peri_cheat.h"
+
 #include <sys/select.h>
 #include <sys/time.h>
 
@@ -17,6 +19,7 @@ PhysMemoryRange *ram;
 
 peri_gfx_t *peri_gfx;
 peri_uart_t *peri_uart;
+peri_cheat_t *peri_cheat;
 
 static void uart_putchar(char c) {
 	putchar(c);
@@ -51,6 +54,9 @@ void mach_setup(uint8_t *main_mem) {
 	peri_uart=peri_uart_init(memmap, UART_OFFSET, uart_putchar, uart_getchar);
 	//Register GFX peripheral
 	peri_gfx=peri_gfx_init(memmap, GFX_OFFSET);
+	//Register cheat interface peripheral
+	peri_cheat=peri_cheat_init(memmap, CHEAT_OFFSET, main_mem);
+
 
 	//Instantiate CPU
 	cpu=riscv_cpu_init(memmap, 32); //init 32-bit machine

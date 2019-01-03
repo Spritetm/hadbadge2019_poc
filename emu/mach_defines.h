@@ -1,4 +1,5 @@
 
+#pragma once
 
 #define MACH_RAM_START	0
 #define MACH_RAM_SIZE	(8*1024*1024)
@@ -31,4 +32,22 @@
 #define GFX_BGND_SCROLLY_REG(i) (GFX_BGND_OFFSET(i)+0x14)
 #define GFX_BGND_TRANS_COL_REG(i) (GFX_BGND_OFFSET(i)+0x18)
 
+//'Cheat' interface; used to ask the emulator to do high-level functions that would
+//normally be implemented in a secondary processor or whatever.
+#define CHEAT_OFFSET 0x10020000
+#define CHEAT_FN_ADDR_REG 0x0
+#define CHEAT_TILEGFX_SIZE_REG 0x4
+#define CHEAT_TILEGFX_READ_ADDR_REG 0x8
+#define CHEAT_LAYERNAME_ADDR_REG 0xC
+#define CHEAT_TILEMAP_SIZE_REG 0x10
+#define CHEAT_TILEMAP_READ_ADDR_REG 0x14
+#define CHEAT_RAW_SIZE_REG 0x18
+#define CHEAT_RAW_READ_ADDR_REG 0x1C
+
+
+typedef struct __attribute__((packed)) {
+	uint16_t w;
+	uint16_t h;
+	uint16_t tiles[];
+} mach_tilemap_t;
 

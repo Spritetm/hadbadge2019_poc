@@ -3,8 +3,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "gloss/mach_defines.h"
-
-#include "gfx.h"
+#include "loader.h"
 
 extern volatile uint32_t GFX[];
 #define GFXREG(i) GFX[i/4]
@@ -24,11 +23,13 @@ void do_test() {
 	GFXREG(GFX_FB_HEIGHT_REG)=240;
 	GFXREG(GFX_FB_BASE_ADDR_REG)=(uint32_t)fb_mem;
 
-	GFXREG(GFX_BGND_WIDTH_REG(0))=map_level1_fgnd.w;
-	GFXREG(GFX_BGND_HEIGHT_REG(0))=map_level1_fgnd.h;
-	GFXREG(GFX_BGND_TILEGFX_ADDR_REG(0))=(uint32_t*)map_level1_fgnd.gfx->tile;
-	GFXREG(GFX_BGND_TRANS_COL_REG(0))=map_level1_fgnd.gfx->trans_col;
-	GFXREG(GFX_BGND_TILEMAP_ADDR_REG(0))=(uint32_t*)map_level1_fgnd.tiles;
+	mach_tilemap_t *map=load_tilemap("tile/level1.tmx", "fgnd");
+	uint8_t *gfx=load_tilegfx("tile/beastlands.png");
+	GFXREG(GFX_BGND_WIDTH_REG(0))=map->w;
+	GFXREG(GFX_BGND_HEIGHT_REG(0))=map->h;
+	GFXREG(GFX_BGND_TILEGFX_ADDR_REG(0))=(uint32_t)gfx;
+	GFXREG(GFX_BGND_TRANS_COL_REG(0))=0x57;
+	GFXREG(GFX_BGND_TILEMAP_ADDR_REG(0))=(uint32_t)map->tiles;
 
 	GFXREG(GFX_BGND_SCROLLX_REG(0))=0;
 	GFXREG(GFX_BGND_SCROLLY_REG(0))=0;
@@ -46,8 +47,8 @@ void do_test() {
 		GFXREG(GFX_FB_SCROLLX_REG)=x;
 		GFXREG(GFX_FB_SCROLLY_REG)=y;
 
-		tx++; if (tx>map_level1_fgnd.w*8) tx=0;
-//		ty++; if (ty>map_level1_fgnd.h*8) ty=0;
+		tx++; if (tx>map->w*8) tx=0;
+//		ty++; if (ty>map->h*8) ty=0;
 
 		GFXREG(GFX_BGND_SCROLLX_REG(0))=tx;
 		GFXREG(GFX_BGND_SCROLLY_REG(0))=ty;

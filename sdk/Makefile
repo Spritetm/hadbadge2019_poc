@@ -13,7 +13,7 @@ APPNAME := app
 TARGET_ELF := $(APPNAME).elf
 TARGET_BIN := $(APPNAME).bin
 TARGET_MAP := $(APPNAME).map
-OBJS := main.o program.o test.o gfx.o
+OBJS := main.o test.o loader.o
 LIBS := gloss/libgloss.a mybasic/libmybasic.a
 LDSCRIPT := gloss/ldscript.ld
 
@@ -28,9 +28,6 @@ $(TARGET_BIN): $(TARGET_ELF)
 
 $(TARGET_ELF): $(LIBS) $(OBJS) $(LDSCRIPT)
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS) -lm
-
-program.o: program.bas
-	$(OBJCOPY) -I binary -O elf32-littleriscv -B riscv:rv32 $^ $@
 
 .PHONY: emu
 emu: $(TARGET_BIN)
