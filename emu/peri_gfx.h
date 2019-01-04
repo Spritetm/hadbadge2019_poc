@@ -23,6 +23,9 @@ typedef struct {
 	uint32_t fb_scrollx;
 	uint32_t fb_scrolly;
 	peri_gfx_bgnd_t bgnd[GFX_BGND_COUNT];
+	uint32_t sprite_tile_addr;
+	uint32_t sprite_list_addr;
+	uint32_t sprite_transcol;
 } peri_gfx_t;
 
 peri_gfx_t *peri_gfx_init(PhysMemoryMap *mmap, uint64_t base_addr);

@@ -61,3 +61,11 @@ int gfx_get_scanline() {
 	return GFXREG(GFX_ST_SCANLINE_REG);
 }
 
+void gfx_sprite_set_mem(mach_sprite_t *sprites, uint8_t *gfx) {
+	GFXREG(GFX_SPRITE_TILEGFX_ADDR_REG)=(uint32_t)gfx;
+	GFXREG(GFX_SPRITE_LIST_ADDR_REG)=(uint32_t)sprites;
+}
+
+mach_sprite_t *gfx_get_sprites() {
+	return (mach_sprite_t*)(GFXREG(GFX_SPRITE_LIST_ADDR_REG));
+}

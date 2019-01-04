@@ -84,7 +84,6 @@ static int _bgndinit(struct mb_interpreter_t* s, void** l) {
 		gfx_bgnd_set_map(id, tm);
 	}
 
-	free(tm);
 	return result;
 }
 
@@ -102,11 +101,11 @@ static int _bgndscroll(struct mb_interpreter_t* s, void** l) {
 	if (id<0 || id>GFX_BGND_COUNT) {
 		result=MB_FUNC_ERR;
 	} else {
-		scrollx %= gfx_bgnd_get_w(id);
-		scrolly %= gfx_bgnd_get_h(id);
-		if (scrollx<0) scrollx+=gfx_bgnd_get_w(id);
-		if (scrolly<0) scrolly+=gfx_bgnd_get_h(id);
-		gfx_bgnd_scroll(id, scrollx, scrolly);
+		scrollx %= gfx_bgnd_get_w(id)*8;
+		scrolly %= gfx_bgnd_get_h(id)*8;
+		if (scrollx<0) scrollx+=gfx_bgnd_get_w(id)*8;
+		if (scrolly<0) scrolly+=gfx_bgnd_get_h(id)*8;
+		gfx_bgnd_set_scroll(id, scrollx, scrolly);
 	}
 	return result;
 }
@@ -121,6 +120,72 @@ static int _waitvbl(struct mb_interpreter_t* s, void** l) {
 	return result;
 }
 
+//sprinit(max_count, tilegfx, trans_col)
+static int _sprinit(struct mb_interpreter_t* s, void** l) {
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+	uint8_t *gfx;
+	int count, transcol;
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_pop_int(s, l, &count));
+	mb_check(mb_pop_usertype(s, l, &gfx));
+	mb_check(mb_pop_int(s, l, &transcol));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	mach_sprite_t *sprites=calloc(sizeof(mach_sprite_t), count+1);
+	mb_assert(sprites);
+	for (int i=0; i<count; i++) sprites[i].ypos=SPRITE_HIDE;
+	sprites[count].ypos=SPRITE_LIST_END_MARKER;
+	gfx_sprite_set_mem(sprites, gfx);
+	return result;
+}
+
+
+//sprsettile(sprno, tileno)
+static int _sprsettile(struct mb_interpreter_t* s, void** l) {
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+	int id, v;
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_pop_int(s, l, &id));
+	mb_check(mb_pop_int(s, l, &v));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	mach_sprite_t *sprites=gfx_get_sprites();
+	sprites[id].tile=v;
+	return result;
+}
+
+//sprsetx(sprno, tileno)
+static int _sprsetx(struct mb_interpreter_t* s, void** l) {
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+	int id, v;
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_pop_int(s, l, &id));
+	mb_check(mb_pop_int(s, l, &v));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	mach_sprite_t *sprites=gfx_get_sprites();
+	sprites[id].xpos=v;
+	return result;
+}
+
+//sprsety(sprno, tileno)
+static int _sprsety(struct mb_interpreter_t* s, void** l) {
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+	int id, v;
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_pop_int(s, l, &id));
+	mb_check(mb_pop_int(s, l, &v));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	mach_sprite_t *sprites=gfx_get_sprites();
+	sprites[id].ypos=v;
+	return result;
+}
+
 
 void mybasicext_gfx_install(struct mb_interpreter_t* bas) {
 	mb_register_func(bas, "TILEMAPLOAD", _tilemapload);
@@ -128,6 +193,10 @@ void mybasicext_gfx_install(struct mb_interpreter_t* bas) {
 	mb_register_func(bas, "TILEGFXLOAD", _tilegfxload);
 	mb_register_func(bas, "TILEGFXFREE", _tilegfxload);
 	mb_register_func(bas, "BGNDINIT", _bgndinit);
-	mb_register_func(bas, "BGNDSCROLL", _bgndinit);
+	mb_register_func(bas, "BGNDSCROLL", _bgndscroll);
 	mb_register_func(bas, "WAITVBL", _waitvbl);
+	mb_register_func(bas, "SPRINIT", _sprinit);
+	mb_register_func(bas, "SPRSETTILE", _sprsettile);
+	mb_register_func(bas, "SPRSETX", _sprsetx);
+	mb_register_func(bas, "SPRSETY", _sprsety);
 }

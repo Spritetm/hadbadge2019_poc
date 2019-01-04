@@ -19,6 +19,9 @@
 #define GFX_FB_HEIGHT_REG 0x18
 #define GFX_FB_SCROLLX_REG 0x1C
 #define GFX_FB_SCROLLY_REG 0x20
+#define GFX_SPRITE_TILEGFX_ADDR_REG 0x24
+#define GFX_SPRITE_LIST_ADDR_REG 0x28
+#define GFX_SPRITE_TRANS_COL_REG 0x2C
 
 #define GFX_BGND_OFFSET_BASE 0x40
 #define GFX_BGND_OFFSET_SIZE 0x20
@@ -61,4 +64,15 @@ typedef struct __attribute__((packed)) {
 	uint16_t h;
 	uint16_t tiles[];
 } mach_tilemap_t;
+
+//special ypos values
+#define SPRITE_LIST_END_MARKER -32768
+#define SPRITE_HIDE -32767
+typedef struct __attribute__((packed)) {
+	int16_t xpos;
+	int16_t ypos;
+	uint16_t tile;
+	uint16_t flags; //whatever
+} mach_sprite_t;
+
 

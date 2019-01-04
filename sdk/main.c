@@ -4,6 +4,27 @@
 #include "driver/loader.h"
 #include "test.h"
 
+static void _on_error(struct mb_interpreter_t* s, mb_error_e e, const char* m, const char* f, int p, unsigned short row, unsigned short col, int abort_code) {
+	mb_unrefvar(s);
+	mb_unrefvar(p);
+
+	if(e != SE_NO_ERR) {
+		if(f) {
+			if(e == SE_RN_WRONG_FUNCTION_REACHED) {
+				printf( "Error:\n    Ln %d, Col %d in Func: %s\n    Code %d, Abort Code %d\n    Message: %s.\n",
+					row, col, f, e, abort_code, m);
+			} else {
+				printf("Error:\n    Ln %d, Col %d in File: %s\n    Code %d, Abort Code %d\n    Message: %s.\n",
+					row, col, f, e, e == SE_EA_EXTENDED_ABORT ? abort_code - MB_EXTENDED_ABORT : abort_code, m);
+			}
+		} else {
+			printf("Error:\n    Ln %d, Col %d\n    Code %d, Abort Code %d\n    Message: %s.\n",
+				row, col, e, e == SE_EA_EXTENDED_ABORT ? abort_code - MB_EXTENDED_ABORT : abort_code, m );
+		}
+	}
+}
+
+
 int main(int argc, char **argv) {
 	uint8_t *basfile=load_file("program.bas");
 	struct mb_interpreter_t* bas = NULL;
@@ -11,9 +32,11 @@ int main(int argc, char **argv) {
 	mb_open(&bas);
 	mybasicext_install(bas);
 	mb_load_string(bas, basfile, true);
+	mb_set_error_handler(bas, _on_error);
 	mb_run(bas, true);
 	mb_close(&bas);
 	mb_dispose();
 	printf("Basic program ended.\n");
-	do_test();
+//	do_test();
+	while(1);
 }

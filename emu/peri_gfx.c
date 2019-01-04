@@ -21,6 +21,12 @@ static void gfx_write_fn(void *opaque, uint32_t offset, uint32_t val, int size_l
 		g->fb_scrollx=val;
 	} else if (offset==GFX_FB_SCROLLY_REG) {
 		g->fb_scrolly=val;
+	} else if (offset==GFX_SPRITE_TILEGFX_ADDR_REG) {
+		g->sprite_tile_addr=val;
+	} else if (offset==GFX_SPRITE_LIST_ADDR_REG) {
+		g->sprite_list_addr=val;
+	} else if (offset==GFX_SPRITE_TRANS_COL_REG) {
+		g->sprite_transcol=val;
 	} else if (bgnd_per_idx>=0 && bgnd_per_idx<GFX_BGND_COUNT) {
 		if (offset==GFX_BGND_TILEMAP_ADDR_REG(bgnd_per_idx)) {
 			g->bgnd[bgnd_per_idx].map_addr=val;
@@ -62,6 +68,12 @@ static uint32_t gfx_read_fn(void *opaque, uint32_t offset, int size_log2) {
 		ret=g->fb_scrollx;
 	} else if (offset==GFX_FB_SCROLLY_REG) {
 		ret=g->fb_scrolly;
+	} else if (offset==GFX_SPRITE_TILEGFX_ADDR_REG) {
+		ret=g->sprite_tile_addr;
+	} else if (offset==GFX_SPRITE_LIST_ADDR_REG) {
+		ret=g->sprite_list_addr;
+	} else if (offset==GFX_SPRITE_TRANS_COL_REG) {
+		ret=g->sprite_transcol;
 	} else if (bgnd_per_idx>=0 && bgnd_per_idx<GFX_BGND_COUNT) {
 		if (offset==GFX_BGND_TILEMAP_ADDR_REG(bgnd_per_idx)) {
 			ret=g->bgnd[bgnd_per_idx].map_addr;
@@ -128,6 +140,32 @@ static void gfx_render_bgnd_scanline(uint8_t *scanline, int ypos, peri_gfx_bgnd_
 	}
 }
 
+//ToDo: Relative offset to sprite pos, to easily scroll screen?
+static void gfx_render_sprites(uint8_t *scanline, int ypos, peri_gfx_t *g, const uint8_t *mem) {
+	if (g->sprite_tile_addr==0 || g->sprite_list_addr==0) return;
+	const uint8_t *tiles=&mem[g->sprite_tile_addr];
+	mach_sprite_t *sprite=(mach_sprite_t*)&mem[g->sprite_list_addr];
+	int sprite_limit=200;
+	while (sprite->ypos!=SPRITE_LIST_END_MARKER) {
+		int sp_y=ypos-sprite->ypos;
+		if (sp_y>=0 && sp_y<8) {
+			const uint8_t *gfx=&tiles[sprite->tile]+sp_y*8;
+			int p_x=sprite->xpos;
+			for (int x=0; x<8; x++) {
+				if (p_x>=0 && p_x<320) {
+					if (gfx[x]!=g->sprite_transcol) scanline[p_x]=gfx[x];
+				}
+				p_x++;
+			}
+		}
+		sprite++;
+		sprite_limit--;
+		if (sprite_limit==0) {
+			fprintf(stderr, "Warning: ran into sprite limit, not rendering more sprites!\n");
+		}
+	}
+}
+
 void peri_gfx_render_scanline(int ypos, peri_gfx_t *g, const uint8_t *mem) {
 	uint8_t scanline[320];
 	if (ypos==0) gfx_clear();
@@ -135,6 +173,7 @@ void peri_gfx_render_scanline(int ypos, peri_gfx_t *g, const uint8_t *mem) {
 	for (int i=0; i<GFX_BGND_COUNT; i++) {
 		gfx_render_bgnd_scanline(scanline, ypos, &g->bgnd[i], mem);
 	}
+	gfx_render_sprites(scanline, ypos, g, mem);
 	gfx_render_fbmem_scanline(ypos, scanline);
 	if (ypos==239) gfx_flip();
 	g->last_scanline=ypos;

@@ -11,3 +11,5 @@ int gfx_bgnd_get_h(int bgndid);
 int gfx_bgnd_get_w(int bgndid);
 void gfx_wait_vbl();
 int gfx_get_scanline();
+void gfx_sprite_set_mem(mach_sprite_t *sprites, uint8_t *gfx);
+mach_sprite_t *gfx_get_sprites();
