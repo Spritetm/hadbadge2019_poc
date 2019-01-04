@@ -23,6 +23,8 @@
 ** CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include "my_basic_config.h"
+
 #ifndef __MY_BASIC_H__
 #define __MY_BASIC_H__
 

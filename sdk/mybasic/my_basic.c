@@ -24,7 +24,6 @@
 */
 
 #include "my_basic.h"
-#include "my_basic_config.h"
 
 /* Version information */
 #define MB_VER_MAJOR 1
@@ -4856,7 +4855,7 @@ static bool_t _is_identifier_char(char c) {
 
 	return (
 		(c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
-		(c == '_') ||
+		(c == '_') || (c == '&') ||
 		_is_numeric_char(c) ||
 		(c == _STRING_POSTFIX_CHAR)
 	);

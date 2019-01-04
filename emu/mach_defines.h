@@ -1,4 +1,4 @@
-
+#include <stdint.h>
 #pragma once
 
 #define MACH_RAM_START	0
@@ -47,16 +47,14 @@
 
 #define BUTTON_OFFSET 0x10030000
 #define BUTTON_READ_REG 0x0
-#define BUTTON_UP 0
-#define BUTTON_DOWN 1
-#define BUTTON_LEFT 2
-#define BUTTON_RIGHT 3
-#define BUTTON_A 4
-#define BUTTON_B 5
-#define BUTTON_SELECT 6
-#define BUTTON_START 7
-
-
+#define BUTTON_UP (1<<0)
+#define BUTTON_DOWN (1<<1)
+#define BUTTON_LEFT (1<<2)
+#define BUTTON_RIGHT (1<<3)
+#define BUTTON_A (1<<4)
+#define BUTTON_B (1<<5)
+#define BUTTON_SELECT (1<<6)
+#define BUTTON_START (1<<7)
 
 typedef struct __attribute__((packed)) {
 	uint16_t w;

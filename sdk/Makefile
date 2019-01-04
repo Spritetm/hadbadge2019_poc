@@ -13,11 +13,11 @@ APPNAME := app
 TARGET_ELF := $(APPNAME).elf
 TARGET_BIN := $(APPNAME).bin
 TARGET_MAP := $(APPNAME).map
-OBJS := main.o test.o loader.o
-LIBS := gloss/libgloss.a mybasic/libmybasic.a
+OBJS := main.o test.o
+LIBS := gloss/libgloss.a mybasic/libmybasic.a driver/libdriver.a
 LDSCRIPT := gloss/ldscript.ld
 
-CFLAGS := -Og -ggdb -Imybasic
+CFLAGS := -Og -ggdb -Imybasic -I.
 LDFLAGS := -Wl,-Bstatic -Wl,-T,$(LDSCRIPT) -Wl,-Map,$(TARGET_MAP) -lgcc -nostartfiles -Lgloss 
 
 export PREFIX CC AR LD OBJCOPY CFLAGS LDFLAGS APPNAME
@@ -39,6 +39,7 @@ clean:
 	rm -f $(TARGET_ELF) $(TARGET_BIN) $(OBJS) $(TARGET_MAP)
 	$(MAKE) -C gloss clean
 	$(MAKE) -C mybasic clean
+	$(MAKE) -C driver clean
 
 .PHONY: gloss/libgloss.a
 gloss/libgloss.a:
@@ -47,4 +48,8 @@ gloss/libgloss.a:
 .PHONY: mybasic/libmybasic.a
 mybasic/libmybasic.a:
 	$(MAKE) -C mybasic
+
+.PHONY: driver/libdriver.a
+driver/libdriver.a:
+	$(MAKE) -C driver
 

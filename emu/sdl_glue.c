@@ -69,10 +69,10 @@ int gfx_poll_event() {
 		} else if (e.type==SDL_KEYDOWN || e.type==SDL_KEYUP) {
 			if (e.key.keysym.sym==SDLK_ESCAPE && e.type==SDL_KEYDOWN) return 1;
 			int mask;
-			if (e.key.keysym.sym==SDLK_UP) mask=(1<<BUTTON_UP);
-			if (e.key.keysym.sym==SDLK_DOWN) mask=(1<<BUTTON_DOWN);
-			if (e.key.keysym.sym==SDLK_LEFT) mask=(1<<BUTTON_LEFT);
-			if (e.key.keysym.sym==SDLK_RIGHT) mask=(1<<BUTTON_RIGHT);
+			if (e.key.keysym.sym==SDLK_UP) mask=BUTTON_UP;
+			if (e.key.keysym.sym==SDLK_DOWN) mask=BUTTON_DOWN;
+			if (e.key.keysym.sym==SDLK_LEFT) mask=BUTTON_LEFT;
+			if (e.key.keysym.sym==SDLK_RIGHT) mask=BUTTON_RIGHT;
 			if (e.type==SDL_KEYDOWN) buttons|=mask; else buttons&=~mask;
 		}
 	}

@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "my_basic.h"
+#include "ext_intliteral_strtol.h"
 
 #define MB_DISABLE_LOAD_FILE
 #undef MB_MANUAL_REAL_FORMATTING
@@ -77,3 +77,5 @@
 #ifndef _mb_check_mark_exit
 #	define _mb_check_mark_exit(__expr, __result, __exit) do { __result = (__expr); if(__result != MB_FUNC_OK) goto __exit; } while(0)
 #endif /* _mb_check_mark_exit */
+
+#define mb_strtol(__s, __e, __r) vbequiv_strtol((__s), (__e), (__r))

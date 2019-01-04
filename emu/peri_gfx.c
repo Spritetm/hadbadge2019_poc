@@ -37,7 +37,7 @@ static void gfx_write_fn(void *opaque, uint32_t offset, uint32_t val, int size_l
 		} else if (offset==GFX_BGND_TRANS_COL_REG(bgnd_per_idx)) {
 			g->bgnd[bgnd_per_idx].transcol=val;
 		} else {
-			printf("gfx: bgnd peri %d: write to undefined reg %x\n", offset);
+			printf("gfx: bgnd peri %d: write to undefined reg %x\n", bgnd_per_idx, offset);
 		}
 	} else {
 		printf("gfx: Write to undefined reg %x\n", offset);
@@ -47,6 +47,7 @@ static void gfx_write_fn(void *opaque, uint32_t offset, uint32_t val, int size_l
 static uint32_t gfx_read_fn(void *opaque, uint32_t offset, int size_log2) {
 	peri_gfx_t *g=(peri_gfx_t*)opaque;
 	uint32_t ret=0;
+	int bgnd_per_idx=(offset-GFX_BGND_OFFSET_BASE)/GFX_BGND_OFFSET_SIZE;
 	if (offset==GFX_ST_SCANLINE_REG) {
 		ret=g->last_scanline;
 	} else if (offset==GFX_ST_FLAG_REG) {
@@ -61,6 +62,24 @@ static uint32_t gfx_read_fn(void *opaque, uint32_t offset, int size_log2) {
 		ret=g->fb_scrollx;
 	} else if (offset==GFX_FB_SCROLLY_REG) {
 		ret=g->fb_scrolly;
+	} else if (bgnd_per_idx>=0 && bgnd_per_idx<GFX_BGND_COUNT) {
+		if (offset==GFX_BGND_TILEMAP_ADDR_REG(bgnd_per_idx)) {
+			ret=g->bgnd[bgnd_per_idx].map_addr;
+		} else if (offset==GFX_BGND_TILEGFX_ADDR_REG(bgnd_per_idx)) {
+			ret=g->bgnd[bgnd_per_idx].gfx_addr;
+		} else if (offset==GFX_BGND_WIDTH_REG(bgnd_per_idx)) {
+			ret=g->bgnd[bgnd_per_idx].width;
+		} else if (offset==GFX_BGND_HEIGHT_REG(bgnd_per_idx)) {
+			ret=g->bgnd[bgnd_per_idx].height;
+		} else if (offset==GFX_BGND_SCROLLX_REG(bgnd_per_idx)) {
+			ret=g->bgnd[bgnd_per_idx].scrollx;
+		} else if (offset==GFX_BGND_SCROLLY_REG(bgnd_per_idx)) {
+			ret=g->bgnd[bgnd_per_idx].scrolly;
+		} else if (offset==GFX_BGND_TRANS_COL_REG(bgnd_per_idx)) {
+			ret=g->bgnd[bgnd_per_idx].transcol;
+		} else {
+			printf("gfx: bgnd peri %d: read from undefined reg %x\n", bgnd_per_idx, offset);
+		}
 	} else {
 		//todo: readback bgnd regs
 		printf("gfx: Read from undefined reg %x\n", offset);

@@ -1,5 +1,5 @@
-TARGET := libmybasic.a
-OBJS := my_basic.o extensions.o ext_btn.o ext_gfx.o ext_intliteral_strtol.o
+TARGET := libdriver.a
+OBJS := gfxdriver.o buttons.o loader.o
 CFLAGS += -I..
 
 $(TARGET): $(OBJS)

@@ -2,13 +2,14 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "gloss/mach_defines.h"
-#include "loader.h"
+#include "driver/loader.h"
+#include "driver/gfxdriver.h"
+#include "driver/buttons.h"
+#include <assert.h>
 
-extern volatile uint32_t GFX[];
-#define GFXREG(i) GFX[i/4]
 
 void do_test() {
+	printf("Do_test starting...\n");
 	uint8_t *fb_mem=calloc(320,240);
 	assert(fb_mem);
 	//Fill mem with pattern
@@ -19,39 +20,30 @@ void do_test() {
 		}
 	}
 	//Set up FB
-	GFXREG(GFX_FB_PITCH_REG)=320;
-	GFXREG(GFX_FB_HEIGHT_REG)=240;
-	GFXREG(GFX_FB_BASE_ADDR_REG)=(uint32_t)fb_mem;
+	gfx_fb_set_mem(fb_mem, 320, 240);
 
 	mach_tilemap_t *map=load_tilemap("tile/level1.tmx", "fgnd");
 	uint8_t *gfx=load_tilegfx("tile/beastlands.png");
-	GFXREG(GFX_BGND_WIDTH_REG(0))=map->w;
-	GFXREG(GFX_BGND_HEIGHT_REG(0))=map->h;
-	GFXREG(GFX_BGND_TILEGFX_ADDR_REG(0))=(uint32_t)gfx;
-	GFXREG(GFX_BGND_TRANS_COL_REG(0))=0x57;
-	GFXREG(GFX_BGND_TILEMAP_ADDR_REG(0))=(uint32_t)map->tiles;
-
-	GFXREG(GFX_BGND_SCROLLX_REG(0))=0;
-	GFXREG(GFX_BGND_SCROLLY_REG(0))=0;
+	gfx_bgnd_set_map(0, map);
+	gfx_bgnd_set_gfx(0, gfx, 0x57);
 
 	int  x=0, y=0;
 	int tx=0, ty=0;
 	while(1) {
-		//Hacky: wait for vbl
-		while (GFXREG(GFX_ST_SCANLINE_REG)!=238) ;
-		while (GFXREG(GFX_ST_SCANLINE_REG)!=239) ;
-		x++;
-		if (x>=320) x=0;
-		y++;
-		if (y>=240) y=0;
-		GFXREG(GFX_FB_SCROLLX_REG)=x;
-		GFXREG(GFX_FB_SCROLLY_REG)=y;
+		gfx_wait_vbl();
+		x++; if (x>=320) x=0;
+		y++; if (y>=240) y=0;
+		gfx_fb_set_scroll(x, y);
 
-		tx++; if (tx>map->w*8) tx=0;
-//		ty++; if (ty>map->h*8) ty=0;
-
-		GFXREG(GFX_BGND_SCROLLX_REG(0))=tx;
-		GFXREG(GFX_BGND_SCROLLY_REG(0))=ty;
-
+		int b=buttons_get_state();
+		if (b&BUTTON_UP) ty--;
+		if (b&BUTTON_DOWN) ty++;
+		if (b&BUTTON_LEFT) tx--;
+		if (b&BUTTON_RIGHT) tx++;
+		if (tx>map->w*8) tx=0;
+		if (tx<0) tx+=map->w*8;
+		if (ty>map->h*8) ty=0;
+		if (ty<0) ty+=map->h*8;
+		gfx_bgnd_set_scroll(0, tx, ty);
 	}
 }
