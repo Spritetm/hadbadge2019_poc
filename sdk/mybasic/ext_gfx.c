@@ -57,7 +57,7 @@ static int _tilegfxfree(struct mb_interpreter_t* s, void** l) {
 	mb_assert(s && l);
 	mach_tilemap_t *tm;
 	mb_check(mb_attempt_open_bracket(s, l));
-	mb_check(mb_pop_usertype(s, l, &tm));
+	mb_check(mb_pop_usertype(s, l, (void**)&tm));
 	mb_check(mb_attempt_close_bracket(s, l));
 	free(tm);
 	return result;
@@ -72,8 +72,8 @@ static int _bgndinit(struct mb_interpreter_t* s, void** l) {
 	int id, transcol;
 	mb_check(mb_attempt_open_bracket(s, l));
 	mb_check(mb_pop_int(s, l, &id));
-	mb_check(mb_pop_usertype(s, l, &tm));
-	mb_check(mb_pop_usertype(s, l, &gfx));
+	mb_check(mb_pop_usertype(s, l, (void**)&tm));
+	mb_check(mb_pop_usertype(s, l, (void**)&gfx));
 	mb_check(mb_pop_int(s, l, &transcol));
 	mb_check(mb_attempt_close_bracket(s, l));
 
@@ -128,7 +128,7 @@ static int _sprinit(struct mb_interpreter_t* s, void** l) {
 	int count, transcol;
 	mb_check(mb_attempt_open_bracket(s, l));
 	mb_check(mb_pop_int(s, l, &count));
-	mb_check(mb_pop_usertype(s, l, &gfx));
+	mb_check(mb_pop_usertype(s, l, (void**)&gfx));
 	mb_check(mb_pop_int(s, l, &transcol));
 	mb_check(mb_attempt_close_bracket(s, l));
 
@@ -186,6 +186,54 @@ static int _sprsety(struct mb_interpreter_t* s, void** l) {
 	return result;
 }
 
+//tile=tilemapat(tilemap, x, y)
+static int _tilemapat(struct mb_interpreter_t* s, void** l) {
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+	mach_tilemap_t *tm;
+	int x, y;
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_pop_usertype(s, l, (void**)&tm));
+	mb_check(mb_pop_int(s, l, &x));
+	mb_check(mb_pop_int(s, l, &y));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	//Wraparound
+	x=x%tm->w;
+	y=y%tm->h;
+	if (x<0) x+=tm->w;
+	if (y<0) y+=tm->h;
+
+	mb_check(mb_push_int(s, l, tm->tiles[tm->w*y+x]));
+
+	return result;
+}
+
+//tilemapset(tilemap, x, y, tile)
+static int _tilemapset(struct mb_interpreter_t* s, void** l) {
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+	mach_tilemap_t *tm;
+	int x, y, t;
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_pop_usertype(s, l, (void**)&tm));
+	mb_check(mb_pop_int(s, l, &x));
+	mb_check(mb_pop_int(s, l, &y));
+	mb_check(mb_pop_int(s, l, &t));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	//Wraparound
+	x=x%tm->w;
+	y=y%tm->h;
+	if (x<0) x+=tm->w;
+	if (y<0) y+=tm->h;
+
+	tm->tiles[tm->w*y+x]=t;
+
+	return result;
+}
+
+
 
 void mybasicext_gfx_install(struct mb_interpreter_t* bas) {
 	mb_register_func(bas, "TILEMAPLOAD", _tilemapload);
@@ -199,4 +247,6 @@ void mybasicext_gfx_install(struct mb_interpreter_t* bas) {
 	mb_register_func(bas, "SPRSETTILE", _sprsettile);
 	mb_register_func(bas, "SPRSETX", _sprsetx);
 	mb_register_func(bas, "SPRSETY", _sprsety);
+	mb_register_func(bas, "TILEMAPAT", _tilemapat);
+	mb_register_func(bas, "TILEMAPSET", _tilemapset);
 }
