@@ -149,7 +149,7 @@ static void gfx_render_sprites(uint8_t *scanline, int ypos, peri_gfx_t *g, const
 	while (sprite->ypos!=SPRITE_LIST_END_MARKER) {
 		int sp_y=ypos-sprite->ypos;
 		if (sp_y>=0 && sp_y<8) {
-			const uint8_t *gfx=&tiles[sprite->tile]+sp_y*8;
+			const uint8_t *gfx=&tiles[sprite->tile*64]+sp_y*8;
 			int p_x=sprite->xpos;
 			for (int x=0; x<8; x++) {
 				if (p_x>=0 && p_x<320) {

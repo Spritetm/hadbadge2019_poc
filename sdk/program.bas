@@ -17,12 +17,10 @@ t=0
 while 1
 	t=t+0.05
 	b=buttons()
-	print (b and 2);
-	if (b and 1) <> 0 then print "Bla";
-	if (b and 1) <> 0 then y=y-1
-	if (b and 2) <> 0 then y=y+1
-	if (b and 4) <> 0 then x=x-1
-	if (b and 8) <> 0 then x=x+1
+	if b = 1 then y=y-1
+	if b = 2 then y=y+1
+	if b = 4 then x=x-1
+	if b = 8 then x=x+1
 	bgndscroll(0, x, y)
 	sprSetX(0, (sin(t)+1)*100)
 	sprSetY(0, (cos(t)+1)*100)

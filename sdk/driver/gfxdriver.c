@@ -41,14 +41,13 @@ int gfx_bgnd_get_h(int bgndid) {
 
 void gfx_bgnd_set_gfx(int bgndid, uint8_t *gfx, int trans_col) {
 	assert(bgndid<GFX_BGND_COUNT);
-	GFXREG(GFX_BGND_TILEGFX_ADDR_REG(0))=(uint32_t)gfx;
-	GFXREG(GFX_BGND_TRANS_COL_REG(0))=(uint32_t)gfx;
-
+	GFXREG(GFX_BGND_TILEGFX_ADDR_REG(bgndid))=(uint32_t)gfx;
+	GFXREG(GFX_BGND_TRANS_COL_REG(bgndid))=(uint32_t)trans_col;
 }
 
 void gfx_bgnd_set_scroll(int bgndid, int scrollx, int scrolly) {
-	GFXREG(GFX_BGND_SCROLLX_REG(0))=scrollx;
-	GFXREG(GFX_BGND_SCROLLY_REG(0))=scrolly;
+	GFXREG(GFX_BGND_SCROLLX_REG(bgndid))=scrollx;
+	GFXREG(GFX_BGND_SCROLLY_REG(bgndid))=scrolly;
 }
 
 void gfx_wait_vbl() {
@@ -61,9 +60,10 @@ int gfx_get_scanline() {
 	return GFXREG(GFX_ST_SCANLINE_REG);
 }
 
-void gfx_sprite_set_mem(mach_sprite_t *sprites, uint8_t *gfx) {
+void gfx_sprite_set_mem(mach_sprite_t *sprites, uint8_t *gfx, int trans_col) {
 	GFXREG(GFX_SPRITE_TILEGFX_ADDR_REG)=(uint32_t)gfx;
 	GFXREG(GFX_SPRITE_LIST_ADDR_REG)=(uint32_t)sprites;
+	GFXREG(GFX_SPRITE_TRANS_COL_REG)=(uint32_t)trans_col;
 }
 
 mach_sprite_t *gfx_get_sprites() {

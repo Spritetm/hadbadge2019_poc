@@ -136,7 +136,7 @@ static int _sprinit(struct mb_interpreter_t* s, void** l) {
 	mb_assert(sprites);
 	for (int i=0; i<count; i++) sprites[i].ypos=SPRITE_HIDE;
 	sprites[count].ypos=SPRITE_LIST_END_MARKER;
-	gfx_sprite_set_mem(sprites, gfx);
+	gfx_sprite_set_mem(sprites, gfx, transcol);
 	return result;
 }
 
