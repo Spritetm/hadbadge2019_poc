@@ -1,6 +1,7 @@
 *.o
 gloss/libgloss.a
 mybasic/libmybasic.a
+driver/libdriver.a
 app.bin
 app.elf
 app.map
