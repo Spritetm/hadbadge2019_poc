@@ -43,7 +43,7 @@ static int uart_getchar() {
 }
 
 //Instructions per second ('clock speed') of the CPU.
-#define CPU_IPS (10*1000*1000)
+#define CPU_IPS (20*1000*1000)
 //Fps the GFX periph runs at
 #define GFX_FPS 60
 

@@ -24,6 +24,18 @@ static void _on_error(struct mb_interpreter_t* s, mb_error_e e, const char* m, c
 	}
 }
 
+static int _on_stepped(struct mb_interpreter_t* s, void** l, const char* f, int p, unsigned short row, unsigned short col) {
+	mb_unrefvar(s);
+	mb_unrefvar(l);
+	mb_unrefvar(f);
+	mb_unrefvar(p);
+//	mb_unrefvar(row);
+//	mb_unrefvar(col);
+	printf("trace: r %d c %d\n", row, col);
+
+	return MB_FUNC_OK;
+}
+
 
 int main(int argc, char **argv) {
 	uint8_t *basfile=load_file("program.bas");
@@ -33,6 +45,7 @@ int main(int argc, char **argv) {
 	mybasicext_install(bas);
 	mb_load_string(bas, basfile, true);
 	mb_set_error_handler(bas, _on_error);
+//	mb_debug_set_stepped_handler(bas, _on_stepped);
 	mb_run(bas, true);
 	mb_close(&bas);
 	mb_dispose();
